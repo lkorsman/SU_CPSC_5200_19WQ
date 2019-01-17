@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json;
 
@@ -74,6 +75,28 @@ namespace restapi.Models
             var result = firstThursday.AddDays(weekNum * 7);
 
             return result.AddDays(-3);
-        }        
+        }
+
+        private IList<ActionLink> GetActionLinks()
+        {
+            var links = new List<ActionLink>();
+            links.Add(new ActionLink()
+            {
+                Method = Method.Post,
+                Type = ContentTypes.TimesheetLine,
+                Relationship = ActionRelationship.RecordLine,
+                Reference = $"/"
+            });
+
+            links.Add(new ActionLink()
+            {
+                Method = Method.Post,
+                Type = ContentTypes.TimesheetLine,
+                Relationship = ActionRelationship.Delete,
+                Reference = $"/{UniqueIdentifier}"
+            });
+
+            return links;
+        }
     }
 }

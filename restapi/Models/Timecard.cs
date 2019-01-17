@@ -84,7 +84,15 @@ namespace restapi.Models
                         Relationship = ActionRelationship.RecordLine,
                         Reference = $"/timesheets/{Identity.Value}/lines"
                     });
-                
+
+                    links.Add(new ActionLink()
+                    {
+                        Method = Method.Post,
+                        Type = ContentTypes.Timesheet,
+                        Relationship = ActionRelationship.Delete,
+                        Reference = $"/timesheets/{Identity.Value}"
+                    });
+
                     break;
 
                 case TimecardStatus.Submitted:
@@ -164,6 +172,29 @@ namespace restapi.Models
             Lines.Add(annotatedLine);
 
             return annotatedLine;
+        }
+
+        public Boolean RemoveLine(string id)
+        {
+            var removedItem = Lines.Single(r => r.UniqueIdentifier.ToString() == id);
+            Lines.Remove(removedItem);
+            return true;
+        }
+
+        public AnnotatedTimecardLine UpdateLine(TimecardLine timecardLine, string id)
+        {
+            var updatedLine = Lines.Single(r => r.UniqueIdentifier.ToString() == id);
+
+            if (updatedLine != null)
+            {
+                updatedLine.Week = timecardLine.Week;
+                updatedLine.Year = timecardLine.Year;
+                updatedLine.Day = timecardLine.Day;
+                updatedLine.Project = timecardLine.Project;
+
+                return updatedLine;
+            }
+            return null;
         }
     }
 }
