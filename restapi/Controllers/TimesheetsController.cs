@@ -40,11 +40,11 @@ namespace restapi.Controllers
         [HttpPost]
         [Produces(ContentTypes.Timesheet)]
         [ProducesResponseType(typeof(Timecard), 200)]
-        public Timecard Create([FromBody] DocumentResource resource)
+        public Timecard Create([FromBody] DocumentResource user)
         {
-            var timecard = new Timecard(resource.Resource);
+            var timecard = new Timecard(user.Resource);
 
-            var entered = new Entered() { Resource = resource.Resource };
+            var entered = new Entered() { Resource = user.Resource };
 
             timecard.Transitions.Add(new Transition(entered));
 
@@ -101,13 +101,13 @@ namespace restapi.Controllers
         [ProducesResponseType(typeof(AnnotatedTimecardLine), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(InvalidStateError), 409)]
-        public IActionResult AddLine(string id, [FromBody] TimecardLine timecardLine, int resource)
+        public IActionResult AddLine(string id, DocumentResource user, [FromBody] TimecardLine timecardLine)
         {
             Timecard timecard = Database.Find(id);
 
             if (timecard != null)
             {
-                if (resource != timecard.Resource)
+                if (user.Resource != timecard.Resource)
                 {
                     return StatusCode(409, new InvalidResourceError() { });
                 }
@@ -127,7 +127,7 @@ namespace restapi.Controllers
         }
 
         [HttpPost("{timecardId}/lines/{lineId}")]
-        public IActionResult ReplaceLine(string timecardId, string lineId, [FromBody] TimecardLine timecardLine, int resource)
+        public IActionResult ReplaceLine(string timecardId, string lineId, DocumentResource user, [FromBody] TimecardLine timecardLine)
         {
             Timecard timecard = Database.Find(timecardId);
 
@@ -135,7 +135,7 @@ namespace restapi.Controllers
             {
                 return NotFound();
             }
-            if (resource != timecard.Resource)
+            if (user.Resource != timecard.Resource)
             {
                 return StatusCode(409, new InvalidResourceError() { });
             }
@@ -147,7 +147,7 @@ namespace restapi.Controllers
         }
 
         [HttpPatch("{timecardId}/lines/{lineId}")]
-        public IActionResult UpdateLine(string timecardId, string lineId, [FromBody] TimecardLine timecardLine, int resource)
+        public IActionResult UpdateLine(string timecardId, string lineId, DocumentResource user, [FromBody] TimecardLine timecardLine)
         {
             Timecard timecard = Database.Find(timecardId);
 
@@ -155,7 +155,7 @@ namespace restapi.Controllers
             {
                 return NotFound();
             }
-            if (resource != timecard.Resource)
+            if (user.Resource != timecard.Resource)
             {
                 return StatusCode(409, new InvalidResourceError() { });
             }
@@ -189,7 +189,7 @@ namespace restapi.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(InvalidStateError), 409)]
         [ProducesResponseType(typeof(EmptyTimecardError), 409)]
-        public IActionResult Submit(string id, [FromBody] Submittal submittal, int resource)
+        public IActionResult Submit(string id, DocumentResource user, [FromBody] Submittal submittal)
         {
             Timecard timecard = Database.Find(id);
 
@@ -204,7 +204,7 @@ namespace restapi.Controllers
                 {
                     return StatusCode(409, new EmptyTimecardError() { });
                 }
-                if (timecard.Resource != resource)
+                if (timecard.Resource != user.Resource)
                 {
                     return StatusCode(409, new InvalidResourceError() { });
                 }

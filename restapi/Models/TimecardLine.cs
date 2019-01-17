@@ -57,6 +57,38 @@ namespace restapi.Models
 
         public string Version { get; set; } = "line-0.1";
 
+        public IList<ActionLink> Actions { get => GetActionLinks(); }
+
+        private IList<ActionLink> GetActionLinks()
+        {
+            var links = new List<ActionLink>();
+            links.Add(new ActionLink()
+            {
+                Method = Method.Post,
+                Type = ContentTypes.TimesheetLine,
+                Relationship = ActionRelationship.RecordLine,
+                Reference = $"/"
+            });
+
+            links.Add(new ActionLink()
+            {
+                Method = Method.Post,
+                Type = ContentTypes.TimesheetLine,
+                Relationship = ActionRelationship.RecordLine,
+                Reference = $"/{UniqueIdentifier}"
+            });
+
+            links.Add(new ActionLink()
+            {
+                Method = Method.Patch,
+                Type = ContentTypes.TimesheetLine,
+                Relationship = ActionRelationship.RecordLine,
+                Reference = $"/{UniqueIdentifier}"
+            });
+
+            return links;
+        }
+
         private static DateTime FirstDateOfWeekISO8601(int year, int weekOfYear)
         {
             var jan1 = new DateTime(year, 1, 1);
@@ -75,28 +107,6 @@ namespace restapi.Models
             var result = firstThursday.AddDays(weekNum * 7);
 
             return result.AddDays(-3);
-        }
-
-        private IList<ActionLink> GetActionLinks()
-        {
-            var links = new List<ActionLink>();
-            links.Add(new ActionLink()
-            {
-                Method = Method.Post,
-                Type = ContentTypes.TimesheetLine,
-                Relationship = ActionRelationship.RecordLine,
-                Reference = $"/"
-            });
-
-            links.Add(new ActionLink()
-            {
-                Method = Method.Post,
-                Type = ContentTypes.TimesheetLine,
-                Relationship = ActionRelationship.Delete,
-                Reference = $"/{UniqueIdentifier}"
-            });
-
-            return links;
         }
     }
 }

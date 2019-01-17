@@ -87,7 +87,7 @@ namespace restapi.Models
 
                     links.Add(new ActionLink()
                     {
-                        Method = Method.Post,
+                        Method = Method.Delete,
                         Type = ContentTypes.Timesheet,
                         Relationship = ActionRelationship.Delete,
                         Reference = $"/timesheets/{Identity.Value}"
